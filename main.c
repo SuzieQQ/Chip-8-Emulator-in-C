@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
    
   SDL_Event event;
 
-  if (argv[0] != ' ')
+  if (strcmp(argv[0],"-"))
   {
     char *pathGame = argv[1];
     Reset();
