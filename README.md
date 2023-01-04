@@ -7,3 +7,7 @@ For reference there are excellent guides example :
 https://austinmorlan.com/posts/chip8_emulator/
 Or
 https://tobiasvl.github.io/blog/write-a-chip-8-emulator/
+
+to compile the project: 
+install library Sdl2
+open terminal digit: gcc -o chip8 main.c chip8.c -std=c18 -lSDL2 -Wall -g
