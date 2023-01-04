@@ -4,7 +4,7 @@
 #define NN  (currOp & 0x00FF) // NN:  The second byte (third and fourth nibbles). An 8-bit immediate number.
 #define NNN (currOp & 0x0FFF) // NNN: The second, third and fourth nibbles. A 12-bit immediate memory address.
 
-U16 pc = 0x0000;        // Program Counter
+U16 pc = 0x0000;        // Progmemory Counter
 U16 regI = 0x0000;      // Register Index
 U16 sp = 0x0000;        // Stack  Pointer
 U16 currOp = 0x0000;    // Opcode
@@ -62,7 +62,7 @@ U32 Keymap[] = {
 
 void Reset()
 {
-   pc = 0x200; // Set Program Counter;
+   pc = 0x200; // Set Progmemory Counter;
 
    currOp = 0x0000;
 
@@ -255,7 +255,7 @@ void Op8xy7() // Set register VX to the value of VY minus VX Set VF to 00 if a b
       regV[0x0F] = 0;
    }
 
-   regV[(currOp & 0xF00) >> 8] -= regV[(currOp & 0x0F0) >> 4];
+   regV[(currOp & 0xF00) >> 8] = regV[(currOp & 0x0F0) >> 4] -  regV[(currOp & 0xF00) >> 8] ;
 }
 
 void Op8xye() // Store the value of register VY shifted left one bit in register VX¹ Set register VF to the most significant bit prior to the shift VY is unchanged
@@ -379,11 +379,12 @@ void Opfx33() // Store the binary-coded decimal equivalent of the value stored i
    memory[regI]     = (regVX % 1000 / 100);
    memory[regI + 1] = (regVX % 100 / 10);
    memory[regI + 2] = (regVX % 10);
+  // printf("%d %d %d ",memory[regI],memory[regI+1],memory[regI+2]);
 }
 
 void Opfx55() // Store the values of registers V0 to VX inclusive in memory starting at address I I is set to I + X + 1 after Operation²
 {
-   U8 regVX = regV[(currOp & 0xF00) >> 8];
+   U8 regVX = (currOp & 0xF00) >> 8;
 
    for (int i = 0; i <= regVX; i++)
    {
@@ -393,7 +394,7 @@ void Opfx55() // Store the values of registers V0 to VX inclusive in memory star
 
 void Opfx65() // Fill registers V0 to VX inclusive with the values stored in memory starting at address I I is set to I + X + 1 after Operation²
 {
-   U8 regVX = regV[(currOp & 0xF00) >> 8];
+   U8 regVX = (currOp & 0xF00) >> 8;
 
    for (int j = 0; j <= regVX; j++)
    {
