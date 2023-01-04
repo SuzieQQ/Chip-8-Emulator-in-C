@@ -4,7 +4,7 @@
 #define NN  (currOp & 0x00FF) // NN:  The second byte (third and fourth nibbles). An 8-bit immediate number.
 #define NNN (currOp & 0x0FFF) // NNN: The second, third and fourth nibbles. A 12-bit immediate memory address.
 
-U16 pc = 0x0000;        // Progmemory Counter
+U16 pc = 0x0000;        // Program Counter
 U16 regI = 0x0000;      // Register Index
 U16 sp = 0x0000;        // Stack  Pointer
 U16 currOp = 0x0000;    // Opcode
