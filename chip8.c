@@ -62,7 +62,7 @@ U32 Keymap[] = {
 
 void Reset()
 {
-   pc = 0x200; // Set Progmemory Counter;
+   pc = 0x200; // Set Program Counter;
 
    currOp = 0x0000;
 
