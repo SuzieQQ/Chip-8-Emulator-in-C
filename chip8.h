@@ -8,8 +8,8 @@ bool_t LoadFile(const char *file);   // Load Rom
 U16 FetchOpcode();                   // Fetch   Istruction
 void ExecuteCpu();                   // Execute Instruction
 void ExecuteVideo();                 // Execute Gpu
-void ExecuteKeys(SDL_Event event);  // Execute Keys
-void printreg();
+void ExecuteKeys(SDL_Event event);   // Execute Keys
+void DebugInstr(SDL_Event event);    // Debug Instr
 
 void Op00e0(); // Clear the screen
 void Op00ee(); // Return from a subroutine

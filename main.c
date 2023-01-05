@@ -3,6 +3,7 @@
 #define W 640
 #define H 480
 extern void *PtrPIXEL;
+extern bool_t DEBUGMODE;
 
 int main(int argc, char *argv[])
 {
@@ -28,15 +29,27 @@ int main(int argc, char *argv[])
     char *pathGame = argv[1];
     Reset();
     LoadFile(pathGame);
+    printf("PRESS F10 FOR ENTER DEBUG MODE \n");
   }
 
-  while (TRUE)
-  {
 
-    ExecuteCpu();
-    ExecuteVideo();
-    ExecuteKeys(event);
-  
+
+while (TRUE)
+{
+
+      if(!DEBUGMODE)
+      {
+       ExecuteCpu();
+       ExecuteVideo();
+       ExecuteKeys(event);
+      }else
+      {
+       DebugInstr(event);
+       ExecuteVideo();
+       ExecuteKeys(event);
+      }
+
+
     // Update
     SDL_UpdateTexture(texture, NULL, PtrPIXEL, 64 * sizeof(U32));
     SDL_RenderClear(renderer);
@@ -46,6 +59,5 @@ int main(int argc, char *argv[])
   }
 
 }
-
-  return 0;
+  exit(EXIT_SUCCESS);
 }

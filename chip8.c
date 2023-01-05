@@ -4,20 +4,21 @@
 #define NN  (currOp & 0x00FF) // NN:  The second byte (third and fourth nibbles). An 8-bit immediate number.
 #define NNN (currOp & 0x0FFF) // NNN: The second, third and fourth nibbles. A 12-bit immediate memory address.
 
-U16 pc = 0x0000;        // Progmemory Counter
-U16 regI = 0x0000;      // Register Index
-U16 sp = 0x0000;        // Stack  Pointer
-U16 currOp = 0x0000;    // Opcode
-U8 delayTimer = 0x00;   // Delay Timer
-U8 soundTimer = 0x00;   // Sound Timer
-U8 regV[16];            // Register VXXX
-U16 stackLevel[16];     // Level Stack
-U8 memory[0x1000];      // Memory Ram 4 Kilobyte
-U32 pixel[0x800];       // Pixels
-U8 gpu[0x800];          // 64x32 Monochrome Display Memory
-U16 keys[16];           // Input Keys
-void *PtrPIXEL = pixel; // For  Help
+U16 pc = 0x0000;          // Progmemory Counter
+U16 regI = 0x0000;        // Register Index
+U16 sp = 0x0000;          // Stack  Pointer
+U16 currOp = 0x0000;      // Opcode
+U8 delayTimer = 0x00;     // Delay Timer
+U8 soundTimer = 0x00;     // Sound Timer
+U8 regV[16];              // Register VXXX
+U16 stackLevel[16];       // Level Stack
+U8 memory[0x1000];        // Memory Ram 4 Kilobyte
+U32 pixel[0x800];         // Pixels
+U8 gpu[0x800];            // 64x32 Monochrome Display Memory
+U16 keys[16];             // Input Keys
+void *PtrPIXEL = pixel;   // For  Help
 bool_t keyPressed = FALSE;
+bool_t DEBUGMODE = FALSE; // Debug   
 
 U8 fontSet[0x50] = // FontSet
     {
@@ -125,7 +126,7 @@ bool_t LoadFile(const char *file) // Load Rom
 
 void Op00e0() // Clear the screen
 {
-   memset(gpu, 0, sizeof(gpu));
+  memset(gpu, 0, sizeof(gpu));
 }
 
 void Op00ee() // Return from a subroutine
@@ -202,7 +203,7 @@ void Op8xy3() // Set VX to VX XOR VY
 
 void Op8xy4() // Add the value of register VY to register VX Set VF to 01 if a carry occurs Set VF to 00 if a carry does not occur
 {
-    regV[(currOp & 0xF00) >> 8] += regV[(currOp & 0x0F0) >> 4];
+   regV[(currOp & 0xF00) >> 8] += regV[(currOp & 0x0F0) >> 4];
 
    U16 C = regV[(currOp & 0x0F0) >> 4] + regV[(currOp & 0xF00) >> 8];
 
@@ -215,7 +216,6 @@ void Op8xy4() // Add the value of register VY to register VX Set VF to 01 if a c
       regV[0x0F] = 0;
    }
     
-
 }
 
 void Op8xy5() // Subtract the value of register VY from register VX Set VF to 00 if a borrow occurs Set VF to 01 if a borrow does not occur
@@ -316,7 +316,6 @@ void Opdxyn() // Draw a sprite at position VX, VY with N bytes of sprite data st
          }
       }
    }
-   
 }
 
 void Opex9e() // Skip the following instruction if the key corresponding to the hex value currently stored in register VX is pressed
@@ -424,9 +423,13 @@ void ExecuteCpu() // Execute Instruction
       {
       case 0x0000:
          Op00e0();
+         if(DEBUGMODE == TRUE)
+         printf("cls -> 0x%04X\n",(currOp&0x000F)<<1);
          break;
       case 0x000E:
          Op00ee();
+         if(DEBUGMODE == TRUE)
+          printf("ret -> 0x%04X\n",(currOp&0x000F)<<1);
          break;
       default:
          printf("\nUnknown Op code 1: %.4X\n", currOp);
@@ -436,24 +439,39 @@ void ExecuteCpu() // Execute Instruction
 
    case 0x1000:
       Op1nnn();
+      if(DEBUGMODE == TRUE)
+      printf("jp -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
       break;
    case 0x2000:
       Op2nnn();
+      if(DEBUGMODE == TRUE)
+      printf("call -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
    case 0x3000:
       Op3xnn();
+      if(DEBUGMODE == TRUE)
+      printf("se -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
    case 0x4000:
       Op4xnn();
+      if(DEBUGMODE == TRUE)
+      printf("sne -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
    case 0x5000:
       Op5xy0();
+    //  printf("ld -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
       break;
    case 0x6000:
       Op6xnn();
+      if(DEBUGMODE == TRUE)
+      printf("ld -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
    case 0x7000:
       Op7xnn();
+      if(DEBUGMODE == TRUE)
+      printf("add -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
 
    // 8XY_
@@ -467,27 +485,50 @@ void ExecuteCpu() // Execute Instruction
 
       case 0x0001:
          Op8xy1();
+         if(DEBUGMODE == TRUE)
+         printf("or -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       case 0x0002:
          Op8xy2();
+         if(DEBUGMODE == TRUE)
+         printf("and -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       case 0x0003:
          Op8xy3();
+         if(DEBUGMODE == TRUE)
+         printf("xor -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       case 0x0004:
          Op8xy4();
+         if(DEBUGMODE == TRUE)
+         printf("add -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       case 0x0005:
          Op8xy5();
+         if(DEBUGMODE == TRUE)
+         printf("sub -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       case 0x0006:
          Op8xy6();
+         if(DEBUGMODE == TRUE)
+         printf("shr -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       case 0x0007:
          Op8xy7();
+         if(DEBUGMODE == TRUE)
+         printf("subn -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x000E:
          Op8xye();
+         if(DEBUGMODE == TRUE)
+         printf("shl -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
          break;
       default:
          printf("\nUnknown Op code 2: %.4X\n", currOp);
@@ -497,18 +538,31 @@ void ExecuteCpu() // Execute Instruction
 
    case 0x9000:
       Op9xy0();
+      if(DEBUGMODE == TRUE)
+      printf("sne -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
    case 0xA000:
       Opannn();
+      if(DEBUGMODE == TRUE)
+      printf("ld -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
       break;
    case 0xB000:
       Opbnnn();
+      if(DEBUGMODE == TRUE)
+      printf("jp -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
       break;
    case 0xC000:
       Opcxnn();
+      if(DEBUGMODE == TRUE)
+      printf("rnd -> 0x%04X\n",(currOp&0x0FFF)<<1);
+
       break;
    case 0xD000:
       Opdxyn();
+      if(DEBUGMODE == TRUE)
+      printf("drw -> 0x%04X\n",(currOp&0x0FFF)<<1);
       break;
 
    // EX__
@@ -518,9 +572,13 @@ void ExecuteCpu() // Execute Instruction
       {
       case 0x00A1:
          Opexa1();
+         if(DEBUGMODE == TRUE)
+         printf("skp -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x009E:
          Opex9e();
+         if(DEBUGMODE == TRUE)
+         printf("sknp -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
 
       default:
@@ -535,30 +593,48 @@ void ExecuteCpu() // Execute Instruction
       {
       case 0x0007:
          Opfx07();
+         if(DEBUGMODE == TRUE)
+         printf("ld dt -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x000A:
          Opfx0a();
+         if(DEBUGMODE == TRUE)
+         printf("ld k -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x0015:
          Opfx15();
+         if(DEBUGMODE == TRUE)
+         printf("ld dt -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x0018:
          Opfx18();
+         if(DEBUGMODE == TRUE)
+         printf("ld st -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x001E:
          Opfx1e();
+         if(DEBUGMODE == TRUE)
+         printf("add i -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x0029:
          Opfx29();
+         if(DEBUGMODE == TRUE)
+         printf("ld f -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x0033:
          Opfx33();
+         if(DEBUGMODE == TRUE)
+         printf("ld b -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x0055:
          Opfx55();
+         if(DEBUGMODE == TRUE)
+         printf("ld mem i -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       case 0x0065:
          Opfx65();
+         if(DEBUGMODE == TRUE)
+         printf("ld x -> 0x%04X\n",(currOp&0x0FFF)<<1);
          break;
       default:
          printf("Unknown Opcode [0xF000]: 0x%X\n", currOp);
@@ -775,6 +851,20 @@ void ExecuteKeys(SDL_Event event)
          keys[15] = 1;
       }
       break;
+      case SDLK_F10:
+    if (event.key.type == SDL_KEYDOWN){
+      if(DEBUGMODE == FALSE)
+      {
+        DEBUGMODE = TRUE;
+        printf("DEBUG MODE PRESS 9 FOR CONTINUE INSTR ... \n");
+      }else
+      {
+         DEBUGMODE = FALSE;
+         printf("EXIT DEBUG MODE ... \n");
+
+      }
+      }
+      break;
    default:
       break;
    }
@@ -803,49 +893,15 @@ void ExecuteKeys(SDL_Event event)
    */
 }
 
-void printreg()
+void DebugInstr(SDL_Event event)
 {
-   // FILE* fp = fOpen("registers.log","a+");
-   // fprintf(fp,"pc: 0x%X I:0x%X\n ",pc,I);
-   //  printf("pc : 0x%X I : 0x%X\n ",pc,I);
-
-   int j = 0;
-   int x = 0;
-
-   for (int i = 0; i < sizeof(memory); i++)
-   {
-      printf("%x ", memory[i]);
-
-      if (j == 32)
-      {
-         j = 0;
-
-         puts(" ");
-
-         x += 1;
-
-         if (x == 16)
-         {
-            system("clear");
-         }
-      }
-
-      j++;
+  
+   SDL_PollEvent(&event);
+     
+   switch (event.key.keysym.sym){
+   case SDLK_9: 
+    if (event.key.type == SDL_KEYDOWN){ ExecuteCpu(); }
+    break;
+   default: break;
    }
-
-   /*
-   for (int i = 0; i < 16; i++)
-   {
-         printf(" v[%d] %x ",i,REGV[i]);
-
-          if( j == 4)
-          {
-             j = 0;
-             puts(" ");
-            // system("clear");
-          }
-
-          j++;
-   }
- */
 }
