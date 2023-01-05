@@ -14,6 +14,8 @@ install library Sdl2
 
 open terminal digit: gcc -o chip8 main.c chip8.c -std=c18 -lSDL2 -Wall -g
 
+or make
+
 ![Screenshot 1](https://github.com/SuzieQQ/screenchip8c/blob/main/1.png)
 ![Screenshot 1](https://github.com/SuzieQQ/screenchip8c/blob/main/2.png)
 ![Screenshot 1](https://github.com/SuzieQQ/screenchip8c/blob/main/3.png)
