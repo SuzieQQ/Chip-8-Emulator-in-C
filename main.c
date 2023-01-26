@@ -3,7 +3,7 @@
 #define W 640
 #define H 480
 extern void *PtrPIXEL;
-extern bool_t DEBUGMODE;
+extern bool_t DEBUGMODE,CHECKMEMORY;
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     char *pathGame = argv[1];
     Reset();
     LoadFile(pathGame);
-    printf("PRESS F10 FOR ENTER DEBUG MODE \n");
+    printf("PRESS F9 FOR CHECK MEMORY or PRESS F10 FOR ENTER DEBUG MODE \n");
   }
 
 
@@ -42,6 +42,12 @@ while (TRUE)
        ExecuteCpu();
        ExecuteVideo();
        ExecuteKeys(event);
+       
+       if(CHECKMEMORY)
+       {
+         DebugMemory();
+       }
+
       }else
       {
        DebugInstr(event);

@@ -19,6 +19,7 @@ U16 keys[16];             // Input Keys
 void *PtrPIXEL = pixel;   // For  Help
 bool_t keyPressed = FALSE;
 bool_t DEBUGMODE = FALSE; // Debug   
+bool_t CHECKMEMORY = FALSE;
 
 U8 fontSet[0x50] = // FontSet
     {
@@ -851,6 +852,20 @@ void ExecuteKeys(SDL_Event event)
          keys[15] = 1;
       }
       break;
+     case SDLK_F9: 
+     if (event.key.type == SDL_KEYDOWN)
+      {
+      if(CHECKMEMORY == FALSE)
+      {
+        CHECKMEMORY = TRUE;
+      }else
+      {
+         printf("CHECK MEMORY DISABLED... \n");
+         CHECKMEMORY = FALSE;
+      }
+             
+      } 
+      break;
       case SDLK_F10:
     if (event.key.type == SDL_KEYDOWN){
       if(DEBUGMODE == FALSE)
@@ -893,15 +908,27 @@ void ExecuteKeys(SDL_Event event)
    */
 }
 
+void DebugMemory()                  // Debug Memory
+{
+    for(int i = 0; i <= 0x1000; i++)
+    {
+      printf("%02x ",memory[i]);
+      
+      if(i%16 == 15)
+      {
+         puts(" ");
+         
+      }
+    }
+}
+
 void DebugInstr(SDL_Event event)
 {
   
    SDL_PollEvent(&event);
-     
+
    switch (event.key.keysym.sym){
-   case SDLK_9: 
-    if (event.key.type == SDL_KEYDOWN){ ExecuteCpu(); }
-    break;
+   case SDLK_9: if (event.key.type == SDL_KEYDOWN){ ExecuteCpu(); } break;
    default: break;
    }
 }

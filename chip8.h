@@ -9,6 +9,7 @@ U16 FetchOpcode();                   // Fetch   Istruction
 void ExecuteCpu();                   // Execute Instruction
 void ExecuteVideo();                 // Execute Gpu
 void ExecuteKeys(SDL_Event event);   // Execute Keys
+void DebugMemory();                  // Debug Memory
 void DebugInstr(SDL_Event event);    // Debug Instr
 
 void Op00e0(); // Clear the screen
